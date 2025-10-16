@@ -1,1 +1,0 @@
-# This file makes databricks_chat_app a Python package 
