@@ -138,7 +138,7 @@ The agent will:
 2. Transform the results into a Plotly visualization
 3. Display the interactive chart
 
-## Architecture
+## Workflow
 
 ```
 User Query
