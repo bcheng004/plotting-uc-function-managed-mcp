@@ -2,6 +2,49 @@
 
 This repository demonstrates how to build an AI agent that can query data and create visualizations using Databricks Genie Spaces, Unity Catalog Functions via Databricks Managed MCP (Model Context Protocol) servers. The agent uses LangGraph to orchestrate tool calls and is deployed using Mosaic AI Agent Framework.
 
+## High-Level Architecture
+
+```mermaid
+graph TB
+    User[👤 User] -->|Natural Language Query| ChatUI[🎨 Streamlit Chat App<br/>Databricks App]
+    
+    ChatUI -->|HTTP Request| AgentEndpoint[🤖 Agent Endpoint<br/>Model Serving]
+    
+    AgentEndpoint -->|Orchestration| LangGraph[🔄 LangGraph Workflow<br/>Tool Calling Agent]
+    
+    LangGraph -->|System Prompt| LLM[🧠 LLM<br/>Claude 3.7 Sonnet]
+    
+    LLM -->|Tool Call 1| MCP_Genie[📊 MCP: Genie Space<br/>query_space tool]
+    MCP_Genie -->|SQL Query| GenieSpace[💾 Genie Space<br/>Natural Language to SQL]
+    GenieSpace -->|Query| DataTable[(🗄️ Data Tables<br/>samples.nyctaxi.trips)]
+    DataTable -->|Results JSON| MCP_Genie
+    MCP_Genie -->|Data JSON| LLM
+    
+    LLM -->|Tool Call 2| MCP_UC[🔧 MCP: UC Functions<br/>genie_to_chart tool]
+    MCP_UC -->|Invoke| UCFunction[⚡ UC Function<br/>genie_to_chart<br/>Python + Plotly]
+    UCFunction -->|Plotly JSON| MCP_UC
+    MCP_UC -->|Chart JSON| LLM
+    
+    LLM -->|Final Response| LangGraph
+    LangGraph -->|Response + Charts| AgentEndpoint
+    AgentEndpoint -->|Parsed Output| ChatUI
+    
+    ChatUI -->|Render| UserChart[📈 Interactive Chart<br/>Plotly Visualization]
+    UserChart -->|Display| User
+    
+    style User fill:#e1f5ff
+    style ChatUI fill:#fff4e6
+    style AgentEndpoint fill:#f3e5f5
+    style LangGraph fill:#e8f5e9
+    style LLM fill:#fce4ec
+    style MCP_Genie fill:#e3f2fd
+    style MCP_UC fill:#e3f2fd
+    style GenieSpace fill:#f1f8e9
+    style UCFunction fill:#fff3e0
+    style DataTable fill:#efebe9
+    style UserChart fill:#e8eaf6
+```
+
 ## Repository Contents
 
 ### Notebooks
